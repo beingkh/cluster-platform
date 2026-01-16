@@ -5,5 +5,5 @@ resources:
 - prometheus.yaml
 - prometheus-service.yaml
 - alertmanager.yaml
-- tempo.yaml
+# - tempo.yaml
 - loki
