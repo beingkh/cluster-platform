@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: etcd-restore
+  namespace: security
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: etcd-restore
+        image: bitnami/etcd:3.5
+        command:
+        - /bin/sh
+        - -c
+        - |
+          etcdctl snapshot restore /backup/etcd-snapshot.db \
+          --data-dir /etcd-data
+        env:
+        - name: ETCDCTL_API
+          value: "3"
+        volumeMounts:
+        - name: backup
+          mountPath: /backup
+        - name: data
+          mountPath: /etcd-data
+      volumes:
+      - name: backup
+        hostPath:
+          path: /var/backups/etcd
+      - name: data
+        hostPath:
+          path: /var/lib/etcd

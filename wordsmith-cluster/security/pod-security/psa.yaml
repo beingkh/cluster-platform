@@ -1,0 +1,16 @@
+#pod security admission policy
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: enforce-pod-security
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+    - apiGroups: [ "" ]
+      apiVersions: [ "v1" ]
+      operations: [ "CREATE", "UPDATE" ]
+      resources: [ "pods" ]
+  validations:
+  - expression: "object.spec.securityContext != null"
+    message: "Pods must define a securityContext"

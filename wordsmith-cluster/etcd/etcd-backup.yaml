@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-backup
+  namespace: security
+spec:
+  schedule: "0 */6 * * *" # every 6 hours
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: etcd-backup
+            image: bitnami/etcd:3.5
+            command:
+            - /bin/sh
+            - -c
+            - |
+              etcdctl snapshot save /backup/etcd-snapshot.db
+            env:
+            - name: ETCDCTL_API
+              value: "3"
+            volumeMounts:
+            - name: backup
+              mountPath: /backup
+          volumes:
+          - name: backup
+            hostPath:
+              path: /var/backups/etcd
